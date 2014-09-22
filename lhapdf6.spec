@@ -11,6 +11,8 @@ Source4: http://www.hepforge.org/archive/lhapdf/pdfsets/6.1/MSTW2008nlo68cl.tar.
 
 Requires: boost yaml-cpp python cython
 
+%define keep_archives true
+
 %if "%{?cms_cxx:set}" != "set"
 %define cms_cxx c++
 %endif
@@ -29,10 +31,11 @@ make all %makeprocesses PYTHONPATH=${CYTHON_ROOT}/lib/python@PYTHONV@/site-packa
 
 %install
 make install PYTHONPATH=${CYTHON_ROOT}/lib/python@PYTHONV@/site-packages
-mkdir -p %{i}/share/LHAPDF/PDFsets
-cd %{i}/share/LHAPDF/PDFsets
-ln -fs ../pdfsets.index pdfsets.index
-ln -fs ../lhapdf.conf lhapdf.conf
+cd %{i}/share/LHAPDF
+# mkdir -p %{i}/share/LHAPDF/PDFsets
+# cd %{i}/share/LHAPDF/PDFsets
+# ln -fs ../pdfsets.index pdfsets.index
+# ln -fs ../lhapdf.conf lhapdf.conf
 #wget http://www.hepforge.org/archive/lhapdf/pdfsets/6.0/cteq6l1.tar.gz
 cp %{_sourcedir}/cteq6l1.tar.gz .
 cp %{_sourcedir}/CT10.tar.gz .
@@ -46,6 +49,9 @@ rm -f MSTW2008nlo68cl.tar.gz
 chmod a+x %{_sourcedir}/lhapdf6_makeLinks
 %{_sourcedir}/lhapdf6_makeLinks %{realversion}
 cd -
+
+# Remove all libtool archives
+find %{i} -name '*.la' -exec rm -f {} \;
 
 %post
 %{relocateConfig}bin/lhapdf-config
